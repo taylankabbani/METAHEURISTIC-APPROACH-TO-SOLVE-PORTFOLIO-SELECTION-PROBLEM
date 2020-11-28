@@ -29,7 +29,3 @@ new problem instances (Istanbul Stock exchange), and will be optimally
 solved using a Metaheuristics approach, (**Genetic Algorithm or Tabu
 Search**).
 
-## Model
-![](Description/Model.PNG)
-## Proposed Algorithm
-![](Description/Algo1.PNG)
