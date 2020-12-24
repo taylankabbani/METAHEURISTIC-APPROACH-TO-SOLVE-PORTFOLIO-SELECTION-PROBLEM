@@ -1,6 +1,7 @@
-from toolz import valmap
+from toolz import valmap, valfilter
 import numpy as np
 from InitialSolution import ConstructiveALGO as CH
+import random as rd
 
 class TS_ShortMemory():
     '''
@@ -83,23 +84,52 @@ class TS_ShortMemory():
         multi_objvalue = (self.Lambda * objvalue_1) - ((1-self.Lambda) * objvalue_2)
         return multi_objvalue
 
-    def Rescale(self, S):
+    def Rescale(self, solution):
         '''
-        Ensures that all weights in a [S]olution (portfolio) satisfy sum to 1 and lower bound(epsilon) constraints
+        Ensures that all weights in a [S]olution (portfolio) satisfy the sum to 1, lower(epsilon) and upper(delta) bound
+        constraints
         '''
         free_prop = 1 - (self.k * self.epsilon)
-        S = valmap(lambda x: self.epsilon + ((x / sum(S.values())) * free_prop), S)
-        return S
+        solution = valmap(lambda x: self.epsilon + ((x / sum(solution.values())) * free_prop), solution)
+        # Fixing upper bond:
+        R = valfilter(lambda x: x > self.delta, solution) # assets with exceeded weights
+        if len(R) > 0:
+            L = sum(valfilter(lambda x: x < self.delta, solution).values()) # sum of weights less than delta
+            free_prop = 1 - (self.k * self.epsilon + len(R)*self.delta)
+            solution = valmap(lambda x: self.epsilon + (x*free_prop/L) if x < self.delta else self.delta, solution)
+        return solution
 
-    def I_move(self, solution, a_i, q =0.1):
+    def I_move(self, solution, i, q =0.1):
         '''
         [I]ncrease_move: Takes a dict solution (portfolio)
-        returns a new neighbor solution with a given asset's (a_i) weight increased by stepsize q
+        returns a new neighbor solution with a given asset's (i) weight increased by stepsize q
         '''
-        w_i = solution[a_i] * (1+q) # increasing the weight of asset a_i in the solution
-        if w_i > self.delta:
-            w_i = self.delta # Ensure the upper bound
+        solution = solution.copy()
+        w_i = solution[i] * (1+q) # increasing the weight of asset i in the solution
+        solution[i] = w_i
         
+        solution = self.Rescale(solution)
+        return solution
+
+    def D_move(self, solution, i, q=0.5):
+        '''
+        [I]ncrease_move: Takes a dict solution (portfolio)
+        returns a new neighbor solution with a given asset's (i) weight decreased by stepsize q
+        If the asset's weight falls bellow epsilon it is replaced with anther asset not yet in solution
+        '''
+        solution=solution.copy()
+        w_i = solution[i] * (1-q) # decrease the weight of asset i in the solution
+        if w_i < self.epsilon:
+            while True:  # randomly selecting asset j not in solution
+                j = rd.choice(list(self.ReturnSD.keys()))
+                if j not in solution:
+                    break
+                else:
+                    continue
+            solution.pop(i)
+            solution[j] = self.epsilon
+        else:
+            solution[i] = w_i
         solution = self.Rescale(solution)
         print(solution)
         return solution
@@ -108,9 +138,15 @@ class TS_ShortMemory():
 
 
 
+
+
+
 test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
                       corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=0.5,
-                      k=10, epsilon=0.00, delta=1)
+                      k=4, epsilon=0.01, delta=0.9)
 
-m = {29: 0.3632909755289824, 5: 0.2627984377653925, 9: 0.19055618129352217, 12: 0.18335440541210293}
-n=test.I_move(m,29)
+initial = test.initial_solution
+initial_val = test.initial_objvalue
+# m = test.I_move(initial,29)
+# m_val = test.Objfun(m)
+m = test.D_move(initial,12)
