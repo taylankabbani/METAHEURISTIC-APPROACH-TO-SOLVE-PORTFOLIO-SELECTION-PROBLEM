@@ -95,13 +95,13 @@ class TS_ShortMemory():
         R = valfilter(lambda x: x > self.delta, solution) # assets with exceeded weights
         if len(R) > 0:
             L = sum(valfilter(lambda x: x < self.delta, solution).values()) # sum of weights less than delta
-            free_prop = 1 - (self.k * self.epsilon + len(R)*self.delta)
+            free_prop = 1 - (self.k * self.epsilon + len(R)*self.delta) # Free proportion in the solution
             solution = valmap(lambda x: self.epsilon + (x*free_prop/L) if x < self.delta else self.delta, solution)
         return solution
 
-    def I_move(self, solution, i, q =0.1):
+    def I_move(self, solution, i, q =0.5):
         '''
-        [I]ncrease_move: Takes a dict solution (portfolio)
+        [I]ncrease move: Takes a dict solution (portfolio)
         returns a new neighbor solution with a given asset's (i) weight increased by stepsize q
         '''
         solution = solution.copy()
@@ -113,27 +113,44 @@ class TS_ShortMemory():
 
     def D_move(self, solution, i, q=0.5):
         '''
-        [I]ncrease_move: Takes a dict solution (portfolio)
+        [D]ecrease move: Takes a dict solution (portfolio)
         returns a new neighbor solution with a given asset's (i) weight decreased by stepsize q
         If the asset's weight falls bellow epsilon it is replaced with anther asset not yet in solution
         '''
         solution=solution.copy()
         w_i = solution[i] * (1-q) # decrease the weight of asset i in the solution
         if w_i < self.epsilon:
-            while True:  # randomly selecting asset j not in solution
-                j = rd.choice(list(self.ReturnSD.keys()))
-                if j not in solution:
-                    break
-                else:
+            while True:
+                j = rd.choice(list(self.ReturnSD.keys())) # randomly selecting asset j not in solution
+                if j in solution:
                     continue
+                else:
+                    break
             solution.pop(i)
-            solution[j] = self.epsilon
+            solution[j] = self.epsilon # add the randomly chosen asset to solution and set weight to epsilon
         else:
             solution[i] = w_i
         solution = self.Rescale(solution)
-        print(solution)
         return solution
 
+    def S_move(self, solution):
+        '''
+        [S]wap move: Takes a dict solution (portfolio)
+        returns a new neighbor solution with a random asset (i) in solution swapped with random one not in the solution
+        '''
+        solution = solution.copy()
+        while True:
+            j = rd.choice(list(self.ReturnSD.keys()))  # randomly selecting asset j not in solution
+            if j in solution:
+                continue
+            else:
+                break
+
+        i = rd.choice(list(solution.keys()))  # randomly selecting asset i in solution
+        w_i = solution[i] # asset i's weight
+        solution.pop(i)
+        solution[j] =w_i
+        return solution
 
 
 
@@ -146,7 +163,9 @@ test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong
                       k=4, epsilon=0.01, delta=0.9)
 
 initial = test.initial_solution
-initial_val = test.initial_objvalue
+# initial_val = test.initial_objvalue
 # m = test.I_move(initial,29)
 # m_val = test.Objfun(m)
-m = test.D_move(initial,12)
+# m = test.D_move(initial,12)
+
+
