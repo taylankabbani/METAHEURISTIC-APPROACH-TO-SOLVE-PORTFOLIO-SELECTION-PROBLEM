@@ -57,12 +57,13 @@ class TS_ShortMemory():
 
     def get_tabuestructure(self):
         '''Takes a dict (input data)
-        Returns a dict of tabu attributes(assets) as keys and [tabu_time] as values
+        Returns a dict of tabu attributes(asset) as keys and {tabu_time,move_value} as values
         '''
         tabu_str = dict()
         # Three tabu lists for three moves
+        inf = float('inf')
         for asset in self.ReturnSD:
-            tabu_str[asset] = {"I":0, "D":0, "C":0}
+            tabu_str[asset] = {'tabu_time':{"I":0, "D":0, "S":0}, 'move_val':{"I":inf, "D":inf, "S":inf}}
         return tabu_str
 
 
@@ -99,7 +100,7 @@ class TS_ShortMemory():
             solution = valmap(lambda x: self.epsilon + (x*free_prop/L) if x < self.delta else self.delta, solution)
         return solution
 
-    def I_move(self, solution, i, q =0.5):
+    def I_move(self, solution, i, q):
         '''
         [I]ncrease move: Takes a dict solution (portfolio)
         returns a new neighbor solution with a given asset's (i) weight increased by stepsize q
@@ -111,7 +112,7 @@ class TS_ShortMemory():
         solution = self.Rescale(solution)
         return solution
 
-    def D_move(self, solution, i, q=0.5):
+    def D_move(self, solution, i, q):
         '''
         [D]ecrease move: Takes a dict solution (portfolio)
         returns a new neighbor solution with a given asset's (i) weight decreased by stepsize q
@@ -133,10 +134,10 @@ class TS_ShortMemory():
         solution = self.Rescale(solution)
         return solution
 
-    def S_move(self, solution):
+    def S_move(self, solution, i):
         '''
         [S]wap move: Takes a dict solution (portfolio)
-        returns a new neighbor solution with a random asset (i) in solution swapped with random one not in the solution
+        returns a new neighbor solution with a random asset (j) not in solution swapped with i asset in the solution
         '''
         solution = solution.copy()
         while True:
@@ -145,12 +146,40 @@ class TS_ShortMemory():
                 continue
             else:
                 break
-
-        i = rd.choice(list(solution.keys()))  # randomly selecting asset i in solution
         w_i = solution[i] # asset i's weight
         solution.pop(i)
         solution[j] =w_i
         return solution
+
+    def Token_ring(self,solution,q):
+        '''
+        Token ring search: Takes a dict solution (portfolio), stepsize q.
+        Searchs the solution space of the solution using two runners t1 and t2.
+        '''
+        current_solution = solution
+        current_obj = self.Objfun(solution)
+        print("Current Solution: {}, objval: {}\n\n".format(current_solution, current_obj))
+        # t1 runner to Search the whole neighborhood with large step size (q)
+        for asset in solution:
+            I_NeighborSolution = self.I_move(solution,asset,q) # Neighborhood solutions by [I]ncrease Move
+            I_NeighborObjval = self.Objfun(I_NeighborSolution)
+            self.tabu_str[asset]['move_val']['I'] = I_NeighborObjval  #update move value
+            D_NeighborSolution = self.D_move(solution,asset,q) # Neighborhood solutions by [D]ncrease Move
+            D_NeighborObjval = self.Objfun(D_NeighborSolution)
+            self.tabu_str[asset]['move_val']['D'] = D_NeighborObjval  # update move value
+            S_NeighborSolution = self.S_move(solution,asset) # Neighborhood solutions by [D]ncrease Move
+            S_NeighborObjval = self.Objfun(S_NeighborSolution)
+            self.tabu_str[asset]['move_val']['S'] = S_NeighborObjval  # update move value
+            print('\nNeighbor Solution {}, Objval: {}'.format(S_NeighborSolution,S_NeighborObjval))
+
+
+
+
+
+
+
+
+
 
 
 
@@ -159,11 +188,16 @@ class TS_ShortMemory():
 
 
 test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
-                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=0.5,
-                      k=4, epsilon=0.01, delta=0.9)
+                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
+                      k=4, epsilon=0.01, delta=1)
 
 initial = test.initial_solution
+test.Token_ring(initial,0.8)
+
+
+
 # initial_val = test.initial_objvalue
+
 # m = test.I_move(initial,29)
 # m_val = test.Objfun(m)
 # m = test.D_move(initial,12)
