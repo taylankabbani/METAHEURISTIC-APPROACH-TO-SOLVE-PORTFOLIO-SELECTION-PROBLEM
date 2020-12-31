@@ -151,49 +151,85 @@ class TS_ShortMemory():
         solution[j] =w_i
         return solution
 
-    def Token_ring(self,solution,q):
+    def T1_runner(self,solution,q):
         '''
         Token ring search: Takes a dict solution (portfolio), stepsize q.
-        Searchs the solution space of the solution using two runners t1 and t2.
+        Searches the whole neighborhood of the three move function (I,D and S) using t1 runner and updates move
+        values accordingly.
         '''
         current_solution = solution
         current_obj = self.Objfun(solution)
-        print("Current Solution: {}, objval: {}\n\n".format(current_solution, current_obj))
         # t1 runner to Search the whole neighborhood with large step size (q)
         for asset in solution:
-            I_NeighborSolution = self.I_move(solution,asset,q) # Neighborhood solutions by [I]ncrease Move
-            I_NeighborObjval = self.Objfun(I_NeighborSolution)
-            self.tabu_str[asset]['move_val']['I'] = I_NeighborObjval  #update move value
-            D_NeighborSolution = self.D_move(solution,asset,q) # Neighborhood solutions by [D]ncrease Move
-            D_NeighborObjval = self.Objfun(D_NeighborSolution)
-            self.tabu_str[asset]['move_val']['D'] = D_NeighborObjval  # update move value
-            S_NeighborSolution = self.S_move(solution,asset) # Neighborhood solutions by [D]ncrease Move
-            S_NeighborObjval = self.Objfun(S_NeighborSolution)
-            self.tabu_str[asset]['move_val']['S'] = S_NeighborObjval  # update move value
-            print('\nNeighbor Solution {}, Objval: {}'.format(S_NeighborSolution,S_NeighborObjval))
+            self.tabu_str[asset]['move_val']['I'] = self.Objfun(self.I_move(solution,asset,q))# Neighborhood solutions by [I]ncrease Move
+            self.tabu_str[asset]['move_val']['D'] = self.Objfun(self.D_move(solution,asset,q))# Neighborhood solutions by [D]ncrease Move
+            self.tabu_str[asset]['move_val']['S'] = self.Objfun(self.S_move(solution,asset))# Neighborhood solutions by [S]wap Move
 
+        # # select the move with the lowest ObjValue (minimization) following t1 technique
+        # t1_bestmoves = {'I':[0,0],'D':[0,0],'S':[0,0]} # move_fun:[move_val, asset]
+        # for move_fun in t1_bestmoves:
+        #     t1_bestmoves[move_fun][1] = min(self.tabu_str, key=lambda x: self.tabu_str[x]['move_val'][
+        #         move_fun])
+        #     # Best moves values obtained by each move function
+        #     t1_bestmoves[move_fun][0]= self.tabu_str[t1_bestmoves[move_fun][1]]['move_val'][move_fun]
+        # t1_bestmove = min(t1_bestmoves,key=lambda x: t1_bestmoves[x][0])
+        # t1_bestmove = (t1_bestmoves[t1_bestmove][1], t1_bestmove)
+        # print(t1_bestmove)
 
+    def TSearch(self):
+        '''
+        The implementation Tabu search algorithm with short-term memory.
+        '''
+        # Parameters:
+        # tenure = self.tabu_tenure
+        best_solution = self.initial_solution
+        best_objvalue = self.initial_objvalue
+        current_solution = self.initial_solution
+        current_objvalue = self.initial_objvalue
+        print("#" * 30, "Short-term memory TS", "#" * 30,
+              "\nInitial Solution: {}, Initial Objvalue: {}".format(current_solution, current_objvalue), sep='\n\n')
+        iter = 1
+        # Terminate = 0
+        while iter < 2:
+            q = 0.3
+            print('\n\n### iter {}###  Current_Objvalue: {}, Best_Objvalue: {}'.format(iter, current_objvalue,best_objvalue))
+            # Searching whole neighborhoods using T1 runner:
+            self.T1_runner(current_solution,q)
 
+            # Admissible move
+            while True:
+                # Select the best move from the neighborhood union of three move functions
+                t1_bestmoves = {'I':[0,0],'D':[0,0],'S':[0,0]} # move_fun:[move_val, asset]
+                for move_fun in t1_bestmoves:
+                    # Best move values obtained by each move function
+                    t1_bestmoves[move_fun][1] = min(self.tabu_str, key=lambda x: self.tabu_str[x]['move_val'][
+                        move_fun])
+                    t1_bestmoves[move_fun][0]= self.tabu_str[t1_bestmoves[move_fun][1]]['move_val'][move_fun]
 
+                t1_fun = min(t1_bestmoves,key=lambda x: t1_bestmoves[x][0]) # Best move function
+                t1_a =  t1_bestmoves[t1_fun][1] # The asset moved
+                t1_val = t1_bestmoves[t1_fun][0] # Best move value
+                t1_tabutime = self.tabu_str[t1_a]['tabu_time'][t1_fun] # Tabu Time
+                # Not Tabu
+                if t1_tabutime < iter:
+                    # make the move
+                    if t1_fun == "I":
+                        current_solution = self.I_move(current_solution,t1_a,q)
+                    elif t1_fun == "D":
+                        current_solution = self.D_move(current_solution, t1_a, q)
+                    else:
+                        current_solution = self.S_move(current_solution, t1_a)
+                    current_objvalue = self.Objfun(current_solution)
+                print(t1_fun, t1_a, t1_val, t1_tabutime,'\n\n', current_solution, current_objvalue)
+                break
 
-
-
-
-
-
-
-
-
-
-
+            iter += 1
 
 test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
-                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
+                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=0.6,
                       k=4, epsilon=0.01, delta=1)
 
-initial = test.initial_solution
-test.Token_ring(initial,0.8)
-
+test.TSearch()
 
 
 # initial_val = test.initial_objvalue
