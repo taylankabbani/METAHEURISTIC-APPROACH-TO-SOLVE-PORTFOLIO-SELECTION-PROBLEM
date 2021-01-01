@@ -148,7 +148,7 @@ class TS_ShortMemory():
             solution[j] =w_i
             return solution
         else:
-            return "J in solution"
+            return "Error: J in solution"
 
     def T1_runner(self,solution,q):
         '''
@@ -156,12 +156,16 @@ class TS_ShortMemory():
         Searches the whole neighborhood of the three move function (I,D and S) using t1 runner and updates move
         values accordingly.
         '''
+        # Resetting all move values to inf
+        for asset in self.tabu_str:
+            for move_fun in self.tabu_str[asset]['move_val']:
+                self.tabu_str[asset]['move_val'][move_fun] = float('inf')
         for asset in solution:
             self.tabu_str[asset]['move_val']['I'] = self.Objfun(self.I_move(solution,asset,q))# Neighborhood solutions by [I]ncrease Move
             self.tabu_str[asset]['move_val']['D'] = self.Objfun(self.D_move(solution,asset,q))# Neighborhood solutions by [D]ncrease Move
-            print()
         for asset in set(self.ReturnSD.keys()) - set(solution):
             self.tabu_str[asset]['move_val']['S'] = self.Objfun(self.S_move(solution,asset))# Neighborhood solutions by [S]wap Move
+
 
     def TSearch(self):
         '''
@@ -177,12 +181,11 @@ class TS_ShortMemory():
               "\nInitial Solution: {}, Initial Objvalue: {}".format(current_solution, current_objvalue), sep='\n\n')
         iter = 1
         Terminate = 0
-        while iter < 2:
-            q = 0.8
+        while iter < 1000:
+            q = 0.1
             print('\n\n### iter {}###  Current_Objvalue: {}, Best_Objvalue: {}'.format(iter, current_objvalue,best_objvalue))
-            # Searching whole neighborhoods using T1 runner:
-            self.T1_runner(current_solution,q)
 
+            self.T1_runner(current_solution,q) # Searching whole neighborhoods using T1 runner
             # Admissible move
             while True:
                 # Select the best move from the neighborhood union of three move functions
@@ -203,25 +206,47 @@ class TS_ShortMemory():
                     # make the move
                     current_solution = self.I_move(current_solution, t1_a, q) if t1_fun == "I" else self.D_move(
                         current_solution, t1_a, q) if t1_fun == "D" else self.S_move(current_solution, t1_a)
-                    current_objvalue = self.Objfun(current_solution)
-
-                    if  current_objvalue < best_objvalue: # Best Improving move
+                    current_objvalue = t1_val
+                    # Best Improving move
+                    if  t1_val < best_objvalue:
                         best_solution = current_solution
                         best_objvalue = current_objvalue
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Best Improving => Admissible".format(
-                            t1_fun, t1_a,current_objvalue))
+                            t1_fun, t1_a,current_objvalue), current_solution)
                         Terminate = 0
                     else:
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Least non-improving => "
-                              "Admissible".format(t1_fun, t1_a,current_objvalue))
+                              "Admissible".format(t1_fun, t1_a,current_objvalue), current_solution)
                         Terminate += 1
                     # update tabu_time for the move
-                    if t1_fun == 'S':
-                        self.tabu_str
                     self.tabu_str[t1_a]['tabu_time'][t1_fun] = iter + tenure
-                    # iter += 1
-                break
-            iter += 1
+                    iter += 1
+                    break
+
+                # If tabu
+                else:
+                    # Aspiration
+                    if t1_val < best_objvalue:
+                        # make the move
+                        best_solution = current_solution = self.I_move(current_solution, t1_a, q) if t1_fun == "I" else\
+                            self.D_move(current_solution, t1_a, q) if t1_fun == "D" else self.S_move(current_solution, t1_a)
+                        best_objvalue = current_objvalue = t1_val
+                        print("   Candidate Move: {} asset {}, Objvalue: {} => Aspiration => Admissible".
+                              format(t1_fun,t1_a,current_objvalue), current_solution)
+                        Terminate = 0
+                        iter += 1
+                        break
+                    # If the move is tabu & aspiration is not met
+                    else:
+                        self.tabu_str[t1_a]['move_val'][t1_fun] = float('inf')
+                        print("   Candidate Move: {} asset {}, Objvalue: {} => Tabu => Inadmissible".
+                              format(t1_fun,t1_a,t1_val))
+                        continue
+
+
+
+
+
 
 
 test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
