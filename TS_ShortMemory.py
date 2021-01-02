@@ -253,9 +253,9 @@ class TS_ShortMemory():
 
 
 
-test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
-                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
-                      k=4, epsilon=0.01, delta=1)
+# test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
+#                       corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
+#                       k=4, epsilon=0.01, delta=1)
 
 # test.TSearch(3,20,100)
 
