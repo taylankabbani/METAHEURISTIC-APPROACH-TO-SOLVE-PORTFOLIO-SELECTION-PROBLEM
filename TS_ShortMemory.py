@@ -167,22 +167,22 @@ class TS_ShortMemory():
             self.tabu_str[asset]['move_val']['S'] = self.Objfun(self.S_move(solution,asset))# Neighborhood solutions by [S]wap Move
 
 
-    def TSearch(self):
+    def TSearch(self,tenure, S_tenure,term_iter):
         '''
         The implementation Tabu search algorithm with short-term memory.
         '''
         # Parameters:
-        tenure = 3
         best_solution = self.initial_solution
         best_objvalue = self.initial_objvalue
         current_solution = self.initial_solution
         current_objvalue = self.initial_objvalue
-        print("#" * 30, "Short-term memory TS", "#" * 30,
-              "\nInitial Solution: {}, Initial Objvalue: {}".format(current_solution, current_objvalue), sep='\n\n')
+        print("#" * 30, "Short-term memory TS with tenure = {} and S_tenure = {}\nTermination if {} iter without "
+                        "finding improving solution".format(tenure, S_tenure,term_iter), "#" * 30,
+              "\nInitial Solution: {}\nInitial Objvalue: {}".format(current_solution, current_objvalue), sep='\n\n')
         iter = 1
         Terminate = 0
-        while iter < 1000:
-            q = 0.1
+        while Terminate < term_iter:
+            q = 0.5
             print('\n\n### iter {}###  Current_Objvalue: {}, Best_Objvalue: {}'.format(iter, current_objvalue,best_objvalue))
 
             self.T1_runner(current_solution,q) # Searching whole neighborhoods using T1 runner
@@ -199,8 +199,8 @@ class TS_ShortMemory():
                 t1_fun = min(t1_bestmoves,key=lambda x: t1_bestmoves[x][0]) # Best move function
                 t1_a =  t1_bestmoves[t1_fun][1] # The asset moved
                 t1_val = t1_bestmoves[t1_fun][0] # Best move value
-                t1_tabutime = self.tabu_str[t1_a]['tabu_time'][t1_fun] # Tabu Time
-
+                t1_tabutime = self.tabu_str[min(current_solution,key=lambda x: current_solution[x])]['tabu_time'][t1_fun] if \
+                    t1_fun =='S' else self.tabu_str[t1_a]['tabu_time'][t1_fun] # Tabu Time for three different moves
                 # Not Tabu
                 if t1_tabutime < iter:
                     # make the move
@@ -212,14 +212,17 @@ class TS_ShortMemory():
                         best_solution = current_solution
                         best_objvalue = current_objvalue
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Best Improving => Admissible".format(
-                            t1_fun, t1_a,current_objvalue), current_solution)
+                            t1_fun, t1_a,current_objvalue))
                         Terminate = 0
                     else:
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Least non-improving => "
-                              "Admissible".format(t1_fun, t1_a,current_objvalue), current_solution)
+                              "Admissible".format(t1_fun, t1_a,current_objvalue))
                         Terminate += 1
                     # update tabu_time for the move
-                    self.tabu_str[t1_a]['tabu_time'][t1_fun] = iter + tenure
+                    if t1_fun == 'S':
+                        self.tabu_str[t1_a]['tabu_time']['S'] = iter + S_tenure
+                    else:
+                        self.tabu_str[t1_a]['tabu_time'][t1_fun] = iter + tenure
                     iter += 1
                     break
 
@@ -232,7 +235,7 @@ class TS_ShortMemory():
                             self.D_move(current_solution, t1_a, q) if t1_fun == "D" else self.S_move(current_solution, t1_a)
                         best_objvalue = current_objvalue = t1_val
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Aspiration => Admissible".
-                              format(t1_fun,t1_a,current_objvalue), current_solution)
+                              format(t1_fun,t1_a,current_objvalue))
                         Terminate = 0
                         iter += 1
                         break
@@ -243,23 +246,18 @@ class TS_ShortMemory():
                               format(t1_fun,t1_a,t1_val))
                         continue
 
-
+        print('#'*30, "Number of Iter: {}\nFinal solution: {}\nObj value: {}".format(iter,best_solution,
+                                                                                     best_objvalue),'#'*30, sep='\n')
 
 
 
 
 
 test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
-                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=0.6,
+                      corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
                       k=4, epsilon=0.01, delta=1)
 
-test.TSearch()
+# test.TSearch(3,20,100)
 
-
-# initial_val = test.initial_objvalue
-
-# m = test.I_move(initial,29)
-# m_val = test.Objfun(m)
-# m = test.D_move(initial,12)
 
 
