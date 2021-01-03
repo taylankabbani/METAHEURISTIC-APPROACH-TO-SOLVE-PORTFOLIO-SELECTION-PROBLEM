@@ -3,7 +3,7 @@ import numpy as np
 from InitialSolution import ConstructiveALGO as CH
 import random as rd
 
-class TS_ShortMemory():
+class POP():
     '''
     Input: mean_return & SD filePath, Correlation filePath, Risk aversion(Lambda), assets in portfolio(k),
     upper and lower bounds (epsilon & delta)
@@ -67,7 +67,7 @@ class TS_ShortMemory():
         return tabu_str
 
 
-    def Objfun(self, solution):
+    def Objfun(self, solution,  Return = 'Multi'):
         '''Takes a dict as solution (stock:weight).
         returns the multi objective function value of the solution
         '''
@@ -83,7 +83,12 @@ class TS_ShortMemory():
             objvalue_2 += float(solution[i] * self.ReturnSD[i]['Mean_Return'])
 
         multi_objvalue = (self.Lambda * objvalue_1) - ((1-self.Lambda) * objvalue_2)
-        return multi_objvalue
+        if Return == 'Multi':
+            return multi_objvalue
+        elif Return == 'Obj1':
+            return objvalue_1
+        elif Return == 'Obj2':
+            return objvalue_2
 
     def Rescale(self, solution):
         '''
@@ -248,16 +253,18 @@ class TS_ShortMemory():
 
         print('#'*30, "Number of Iter: {}\nFinal solution: {}\nObj value: {}".format(iter,best_solution,
                                                                                      best_objvalue),'#'*30, sep='\n')
+        return best_solution, best_objvalue
 
 
 
-
-
-# test = TS_ShortMemory(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
+# test = POP(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
 #                       corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
 #                       k=4, epsilon=0.01, delta=1)
+# test = POP(ReturnSD_path= "Data/Hong_Kong_31/Return&SD.txt",
+#                       corr_path="Data/Hong_Kong_31/correlation.txt",Lambda=1,
+#                       k=4, epsilon=0.01, delta=1)
 
-# test.TSearch(3,20,100)
 
+# solution, objval = test.TSearch(3,20,100)
 
 
