@@ -218,7 +218,7 @@ class POP():
                         best_objvalue = current_objvalue
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Best Improving => Admissible".format(
                             t1_fun, t1_a,current_objvalue))
-                        self.Best_improving_solutions.append(best_solution)
+                        self.Best_improving_solutions.append(best_solution) # Storing the best improving solution found
                         Terminate = 0
                     else:
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Least non-improving => "
@@ -242,7 +242,7 @@ class POP():
                         best_objvalue = current_objvalue = t1_val
                         print("   Candidate Move: {} asset {}, Objvalue: {} => Aspiration => Admissible".
                               format(t1_fun,t1_a,current_objvalue))
-                        self.Best_improving_solutions.append(best_solution)
+                        self.Best_improving_solutions.append(best_solution) # Storing the best improving solution found
                         Terminate = 0
                         iter += 1
                         break
@@ -258,32 +258,31 @@ class POP():
         return best_solution, best_objvalue
 
     def t2_runner(self):
-        stepsize_list = np.arange(5, 0, -0.2) # Construct a stepsize list
-        # Solutions obtained from the Initial solution and first stepsize
-        solution_next, objval_next = self.TSearch(initial_solution=self.initial_solution,stepsize=6, I_D_tenure=10, S_tenure=50,term_iter=100)
-        # Iterating over all stepsizes taking the solution found by the prvious one as initial solution
-        for i in stepsize_list:
-            # Resetting all move tabutime to 0
-            for asset in self.tabu_str:
-                for move_fun in self.tabu_str[asset]['tabu_time']:
-                    self.tabu_str[asset]['tabu_time'][move_fun] = 0
-            solution_next , objval_next = self.TSearch(initial_solution=solution_next,stepsize=i, I_D_tenure=10, S_tenure=50,term_iter=100)
+        stepsize_list = np.arange(5, 0, -0.1) # Construct a stepsize list
+        # Initial solution and first stepsize
+        solution_next, objval_next = self.TSearch(initial_solution=self.initial_solution,stepsize=6, I_D_tenure=3,
+                                                  S_tenure=20,term_iter=200)
+        improved_count =self.Best_improving_solutions
+
+        while True:
+            improved_count = self.Best_improving_solutions  # Improved solutions found by last t1_runner
+            # Iterating over all stepsizes taking the solution found by the previous one as initial solution
+            for i in stepsize_list:
+                # Resetting all move tabutime to 0
+                for asset in self.tabu_str:
+                    for move_fun in self.tabu_str[asset]['tabu_time']:
+                        self.tabu_str[asset]['tabu_time'][move_fun] = 0
+                solution_next , objval_next = self.TSearch(initial_solution=solution_next,stepsize=i, I_D_tenure=3,
+                                                           S_tenure=20,term_iter=200)
+            if len(improved_count) < len(self.Best_improving_solutions): # If last run find an improving solution
+                continue
+            else: # If last run didn't find an improving solution
+                break
+        return solution_next, objval_next
 
 
     
 
-
-
-# test = POP(ReturnSD_path= "/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/Return&SD.txt",
-#                       corr_path="/home/taylan/PycharmProjects/POP/Data/Hong_Kong_31/correlation.txt",Lambda=1,
-#                       k=4, epsilon=0.01, delta=1)
-test = POP(ReturnSD_path= "Data/Hong_Kong_31/Return&SD.txt",
-                      corr_path="Data/Hong_Kong_31/correlation.txt",Lambda=0.8,
-                      k=10, epsilon=0.01, delta=1)
-
-test.t2_runner()
-
-
-# solution, objval = test.TSearch(test.initial_solution,5,2,100,200)
-
+test = POP(ReturnSD_path= "Data/Hong_Kong_31/Return&SD.txt",corr_path="Data/Hong_Kong_31/correlation.txt",Lambda=0.3, k=10, epsilon=0.01, delta=1)
+# best_solution, best_objval = test.t2_runner()
 print(len(test.Best_improving_solutions))
