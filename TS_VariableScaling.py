@@ -258,7 +258,7 @@ class POP():
         return best_solution, best_objvalue
 
     def t2_runner(self):
-        stepsize_list = np.arange(5, 0, -0.1) # Construct a stepsize list
+        stepsize_list = np.arange(5, 0, -0.2) # Construct a stepsize list
         # Initial solution and first stepsize
         solution_next, objval_next = self.TSearch(initial_solution=self.initial_solution,stepsize=6, I_D_tenure=3,
                                                   S_tenure=20,term_iter=200)
@@ -283,6 +283,6 @@ class POP():
 
     
 
-test = POP(ReturnSD_path= "Data/Hong_Kong_31/Return&SD.txt",corr_path="Data/Hong_Kong_31/correlation.txt",Lambda=0.3, k=10, epsilon=0.01, delta=1)
+# test = POP(ReturnSD_path= "Data/Hong_Kong_31/Return&SD.txt",corr_path="Data/Hong_Kong_31/correlation.txt",Lambda=0.3, k=10, epsilon=0.01, delta=1)
 # best_solution, best_objval = test.t2_runner()
-print(len(test.Best_improving_solutions))
+# print(len(test.Best_improving_solutions))
