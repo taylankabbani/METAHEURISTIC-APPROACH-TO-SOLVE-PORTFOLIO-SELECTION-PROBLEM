@@ -3,13 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Unconstrained Efficient frontier
-portef = pd.read_csv("Data\Hong_Kong_31\portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
-portef.plot(x = "Risk", y ='Return')
-plt.xlim([0, 0.006]);
-plt.ylim([0, 0.013]);
-
-
 
 def Solutions(ReturnSD_path, corr_path):
     '''
@@ -19,7 +12,7 @@ def Solutions(ReturnSD_path, corr_path):
     Solutions = []
     Return = []
     Risk = []
-    for Lambda_value in Lambda_values: 
+    for Lambda_value in Lambda_values:
         T_POP = TS.POP(ReturnSD_path= ReturnSD_path ,
                             corr_path= corr_path ,Lambda= round(Lambda_value,3),
                             k=10, epsilon=0.01, delta=1)
@@ -38,7 +31,7 @@ def Error_measures(portcef,portef):
     '''
     # linear interpolation in the standard efficient frontier
 
-    # corresponding Variance for fixed Return 
+    # corresponding Variance for fixed Return
     ef_variances = []
     for i in portcef.Return:
         col = portef[round(portef.Return,6) == round(i,6)].values.tolist()
@@ -61,7 +54,7 @@ def Error_measures(portcef,portef):
             sum += item[0]
         ef_Return = sum/len(col)
         ef_returns.append(ef_Return)
-        
+
     portcef['ef_Return'] =  ef_returns
     portcef['ef_Risk'] = ef_variances
 
@@ -77,14 +70,14 @@ def Error_measures(portcef,portef):
 
 
 # Portfolio constrained efficient frontier
-solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt") 
+solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
 # portcef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
 
 
 # Portfolio unconstrained efficient frontier
-portef = pd.read_csv("Data\Hong_Kong_31\portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
 # portef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
