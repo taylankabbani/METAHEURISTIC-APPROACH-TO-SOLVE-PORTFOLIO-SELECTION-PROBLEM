@@ -26,6 +26,5 @@ Programming (MIQP) problem, which is a NP-Hard problem that can be
 optimally solved using *Metaheuristic* approaches.  
 *The Constrained Multi-Objective Portfolio Selection* will be applied on
 new problem instances (Istanbul Stock exchange), and will be optimally
-solved using a Metaheuristics approach, (**Genetic Algorithm or Tabu
-Search**).
+solved using a Metaheuristics approach, (**Tabu Search**).
 
