@@ -1,4 +1,4 @@
-import TS_VariableScaling as TS
+import TS_TokenRing as TS
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
