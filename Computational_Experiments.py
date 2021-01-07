@@ -90,20 +90,20 @@ def Error_measures(portcef,portef):
 ########## Hong_Kong 31 asset#############
 
 # Portfolio constrained efficient frontier
-# start = t.time()
-# solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
-# end = t.time()
+start = t.time()
+solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
+end = t.time()
 # portcef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
+# plt.savefig('portcef')
 
 # Portfolio unconstrained efficient frontier
-# portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
 # portef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
-
-# MedianError_31, MeanError_31 = Error_measures(portcef,portef)
+MedianError_31, MeanError_31 = Error_measures(portcef,portef)
 
 ########## Germany 85 asset#############
 # Portfolio constrained efficient frontier
@@ -113,17 +113,35 @@ def Error_measures(portcef,portef):
 # print('Times:{}'.format(end-start))
 # # Portfolio unconstrained efficient frontier
 # portef = pd.read_csv("Data/Germany_85/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
-#
 # MedianError_85, MeanError_85 = Error_measures(portcef,portef)
 
-########## Germany 85 asset#############
-
+########## Japan 225 asset#############
 # Portfolio constrained efficient frontier
-start = t.time()
-solutions, portcef = Solutions("Data/Japan_225/Return&SD.txt", "Data/Japan_225/correlation.txt")
-end = t.time()
-print('Times:{}'.format(end-start))
-# Portfolio unconstrained efficient frontier
-portef = pd.read_csv("Data/Japan_225/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+# start = t.time()
+# solutions, portcef = Solutions("Data/Japan_225/Return&SD.txt", "Data/Japan_225/correlation.txt")
+# end = t.time()
+# print('Times:{}'.format(end-start))
+# # Portfolio unconstrained efficient frontier
+# portef = pd.read_csv("Data/Japan_225/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+# MedianError_225, MeanError_225 = Error_measures(portcef,portef)
 
-MedianError_225, MeanError_225 = Error_measures(portcef,portef)
+
+########## USA 98 asset#############
+# start = t.time()
+# solutions, portcef = Solutions("Data/USA_98/Return&SD.txt", "Data/USA_98/correlation.txt")
+# end = t.time()
+# print('Times:{}'.format(end-start))
+# # Portfolio unconstrained efficient frontier
+# portef = pd.read_csv("Data/USA_98/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+#
+# MedianError_98, MeanError_98 = Error_measures(portcef,portef)
+
+# ########## USA 89 asset#############
+# start = t.time()
+# solutions, portcef = Solutions("Data/UK_89/Return&SD.txt", "Data/UK_89/correlation.txt")
+# end = t.time()
+# print('Times:{}'.format(end-start))
+# # Portfolio unconstrained efficient frontier
+# portef = pd.read_csv("Data/UK_89/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+#
+# MedianError_89, MeanError_89 = Error_measures(portcef,portef)
