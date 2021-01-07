@@ -2,6 +2,7 @@ import TS_TokenRing as TS
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import time as t
 
 
 def Solutions(ReturnSD_path, corr_path):
@@ -23,6 +24,8 @@ def Solutions(ReturnSD_path, corr_path):
         Risk.append(round(obj1,10))
         Return.append(round(obj2,10))
     df = pd.DataFrame(list(zip(Return, Risk)), columns=['Return', 'Risk'])
+    # Save results
+    df.to_csv('Data/Germany_85/portcef.csv', index=None)
     return Solutions, df
 
 
@@ -36,6 +39,10 @@ def Error_measures(portcef,portef):
         col = portef[round(portef.Return,6) == round(i,6)].values.tolist()
         if len(col)== 0:
             col = portef[round(portef.Return,5) == round(i,5)].values.tolist()
+            if len(col)== 0:
+                col = portef[round(portef.Return, 4) == round(i, 4)].values.tolist()
+                if len(col) == 0:
+                    col = portef[round(portef.Return, 3) == round(i, 3)].values.tolist()
         if len(col) > 1:
             # Risk = y_k + (y_j -y_k) * ((x_i -x_k)/(x_j - x_k))
             Risk = col[0][1] + (col[-1][1] - col[0][1]) * ((i - col[0][0]) / (col[-1][0] - col[0][0]))
@@ -49,6 +56,10 @@ def Error_measures(portcef,portef):
         col = portef[round(portef.Risk,6) == round(i,6)].values.tolist()
         if len(col)== 0:
             col = portef[round(portef.Risk,5) == round(i,5)].values.tolist()
+            if len(col) == 0:
+                col = portef[round(portef.Return, 4) == round(i, 4)].values.tolist()
+                if len(col) == 0:
+                    col = portef[round(portef.Return, 3) == round(i, 3)].values.tolist()
         if len(col) > 1:
             # Return = x_k + (x_j -x_k) * ((y_i -y_k)/(y_j - y_k))
             Return = col[0][0] +(col[-1][0] - col[0][0])*((i-col[0][1])/(col[-1][1]-col[0][1]))
@@ -79,11 +90,12 @@ def Error_measures(portcef,portef):
 ########## Hong_Kong 31 asset#############
 
 # Portfolio constrained efficient frontier
+# start = t.time()
 # solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
+# end = t.time()
 # portcef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
-
 
 # Portfolio unconstrained efficient frontier
 # portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
@@ -96,17 +108,11 @@ def Error_measures(portcef,portef):
 ########## Germani 85 asset#############
 
 # Portfolio constrained efficient frontier
-# solutions, portcef = Solutions("Data/Germany_85/Return&SD.txt", "Data/Germany_85/correlation.txt")
-# portcef.plot(x = "Risk", y ='Return')
-# plt.xlim([0, 0.006]);
-# plt.ylim([0, 0.013]);
-
-
+start = t.time()
+solutions, portcef = Solutions("Data/Germany_85/Return&SD.txt", "Data/Germany_85/correlation.txt")
+end = t.time()
+print('Times:{}'.format(end-start))
 # Portfolio unconstrained efficient frontier
 portef = pd.read_csv("Data/Germany_85/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
-portef.plot(x = "Risk", y ='Return')
-# plt.xlim([0, 0.006]);
-# plt.ylim([0, 0.013]);
-plt.show()
 
 MedianError_85, MeanError_85 = Error_measures(portcef,portef)
