@@ -28,13 +28,13 @@ class POP():
         corr_dict = dict()
         with open(corr_path) as fp:
             for line in fp:
-                key = (int(line.split(" ")[0]), int(line.split(" ")[1]))
-                value = float(line.split(" ")[2].strip('\n'))
+                key = (int(line.split("\t")[0]), int(line.split("\t")[1]))
+                value = float(line.split("\t")[2].strip('\n'))
                 corr_dict[key] = value
         with open(ReturnSD_path) as fp:
             for line in fp:
-                key = int(line.split(" ")[0])
-                value = {'Mean_Return': float(line.split(" ")[1]), 'SD': float(line.split(" ")[2].strip('\n'))}
+                key = int(line.split("\t")[0])
+                value = {'Mean_Return': float(line.split("\t")[1]), 'SD': float(line.split("\t")[2].strip('\n'))}
                 ReturnSD_dict[key] = value
         return ReturnSD_dict, corr_dict
 

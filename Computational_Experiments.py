@@ -76,18 +76,37 @@ def Error_measures(portcef,portef):
 
     return Median, Mean
 
+########## Hong_Kong 31 asset#############
 
 # Portfolio constrained efficient frontier
-solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
+# solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
 # portcef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
 
 
 # Portfolio unconstrained efficient frontier
-portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+# portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
 # portef.plot(x = "Risk", y ='Return')
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
 
-MedianError, MeanError = Error_measures(portcef,portef)
+# MedianError_31, MeanError_31 = Error_measures(portcef,portef)
+
+########## Germani 85 asset#############
+
+# Portfolio constrained efficient frontier
+# solutions, portcef = Solutions("Data/Germany_85/Return&SD.txt", "Data/Germany_85/correlation.txt")
+# portcef.plot(x = "Risk", y ='Return')
+# plt.xlim([0, 0.006]);
+# plt.ylim([0, 0.013]);
+
+
+# Portfolio unconstrained efficient frontier
+portef = pd.read_csv("Data/Germany_85/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+portef.plot(x = "Risk", y ='Return')
+# plt.xlim([0, 0.006]);
+# plt.ylim([0, 0.013]);
+plt.show()
+
+MedianError_85, MeanError_85 = Error_measures(portcef,portef)
