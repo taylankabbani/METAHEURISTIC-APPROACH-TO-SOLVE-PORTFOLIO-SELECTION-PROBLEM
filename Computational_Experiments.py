@@ -25,7 +25,7 @@ def Solutions(ReturnSD_path, corr_path):
         Return.append(round(obj2,10))
     df = pd.DataFrame(list(zip(Return, Risk)), columns=['Return', 'Risk'])
     # Save results
-    df.to_csv('Data/Germany_85/portcef.csv', index=None)
+    df.to_csv('Data/portcef.csv', index=None)
     return Solutions, df
 
 
@@ -105,14 +105,25 @@ def Error_measures(portcef,portef):
 
 # MedianError_31, MeanError_31 = Error_measures(portcef,portef)
 
-########## Germani 85 asset#############
+########## Germany 85 asset#############
+# Portfolio constrained efficient frontier
+# start = t.time()
+# solutions, portcef = Solutions("Data/Germany_85/Return&SD.txt", "Data/Germany_85/correlation.txt")
+# end = t.time()
+# print('Times:{}'.format(end-start))
+# # Portfolio unconstrained efficient frontier
+# portef = pd.read_csv("Data/Germany_85/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+#
+# MedianError_85, MeanError_85 = Error_measures(portcef,portef)
+
+########## Germany 85 asset#############
 
 # Portfolio constrained efficient frontier
 start = t.time()
-solutions, portcef = Solutions("Data/Germany_85/Return&SD.txt", "Data/Germany_85/correlation.txt")
+solutions, portcef = Solutions("Data/Japan_225/Return&SD.txt", "Data/Japan_225/correlation.txt")
 end = t.time()
 print('Times:{}'.format(end-start))
 # Portfolio unconstrained efficient frontier
-portef = pd.read_csv("Data/Germany_85/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+portef = pd.read_csv("Data/Japan_225/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
 
-MedianError_85, MeanError_85 = Error_measures(portcef,portef)
+MedianError_225, MeanError_225 = Error_measures(portcef,portef)
