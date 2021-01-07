@@ -25,48 +25,56 @@ def Solutions(ReturnSD_path, corr_path):
     df = pd.DataFrame(list(zip(Return, Risk)), columns=['Return', 'Risk'])
     return Solutions, df
 
+
 def Error_measures(portcef,portef):
     '''
-    Finding the Variance of return error, Mean return error & Minimum error
+    linear interpolation in the standard efficient frontier
     '''
-    # linear interpolation in the standard efficient frontier
-
     # corresponding Variance for fixed Return
     ef_variances = []
     for i in portcef.Return:
         col = portef[round(portef.Return,6) == round(i,6)].values.tolist()
         if len(col)== 0:
             col = portef[round(portef.Return,5) == round(i,5)].values.tolist()
-        sum = 0
-        for item in col:
-            sum += item[1]
-        ef_Risk = sum/len(col)
+        if len(col) > 1:
+            # Risk = y_k + (y_j -y_k) * ((x_i -x_k)/(x_j - x_k))
+            Risk = col[0][1] + (col[-1][1] - col[0][1]) * ((i - col[0][0]) / (col[-1][0] - col[0][0]))
+        else:
+            Risk= col[0][1]
+        ef_variances.append(Risk)
 
-        ef_variances.append(ef_Risk)
     # corresponding Return for fixed Variance
     ef_returns = []
     for i in portcef.Risk:
         col = portef[round(portef.Risk,6) == round(i,6)].values.tolist()
         if len(col)== 0:
             col = portef[round(portef.Risk,5) == round(i,5)].values.tolist()
-        sum = 0
-        for item in col:
-            sum += item[0]
-        ef_Return = sum/len(col)
-        ef_returns.append(ef_Return)
+        if len(col) > 1:
+            # Return = x_k + (x_j -x_k) * ((y_i -y_k)/(y_j - y_k))
+            Return = col[0][0] +(col[-1][0] - col[0][0])*((i-col[0][1])/(col[-1][1]-col[0][1]))
+        else:
+            Return = col[0][0]
+        ef_returns.append(Return)
 
     portcef['ef_Return'] =  ef_returns
     portcef['ef_Risk'] = ef_variances
 
     # Return Error
-    portcef = portcef.assign(Return_Error = lambda portcef : 100 * (portcef.ef_Return - portcef.Return) / portcef.ef_Return)
-    Return_Erro = round(portcef.Return_Error.mean(),4)
+    portcef = portcef.assign(Return_Error = lambda portcef : abs(100 * (portcef.Return- portcef.ef_Return) /
+    portcef.ef_Return))
     #Variance Error
     portcef = portcef.assign(Risk_Error = lambda portcef : 100 * (portcef.Risk - portcef.ef_Risk) /portcef.ef_Risk)
     Risk_Error = round(portcef.Risk_Error.mean(),4)
 
-    print("Variance of return error: {}\nMean return error: {}".format(Risk_Error,Return_Erro))
-    return Risk_Error, Return_Erro
+    # The minimum of x-direction, y-direction percentage deviation
+    portcef['min'] = portcef[['Return_Error', 'Risk_Error']].min(axis=1)
+
+    Median = portcef['min'].median()
+    Mean = portcef['min'].mean()
+
+    print("Median Percentage Error: {}\nMean Percentage Error: {}".format(Median,Mean))
+
+    return Median, Mean
 
 
 # Portfolio constrained efficient frontier
@@ -82,4 +90,4 @@ portef = pd.read_csv("Data/Hong_Kong_31/portef.txt", sep='\t', header=None,names
 # plt.xlim([0, 0.006]);
 # plt.ylim([0, 0.013]);
 
-HK_Variance_Error, HK_Return_Error = Error_measures(portcef,portef)
+MedianError, MeanError = Error_measures(portcef,portef)
