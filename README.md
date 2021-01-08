@@ -2,7 +2,7 @@
 ### [Research Paper](https://github.com/taylankabbani/METAHEURISTIC-APPROACH-FOR-POP/blob/master/Description/Progress_Repo.pdf)
  Tabu Search and TokenRing Search is being used in order to solve the Portfolio Optimization Problem. The seminal mean-variance model of Markowitz is being considered with the addition of cardinality and quantity constraints to better capture the dynamics of the trading procedure, the model becomes NP-hard problem which can not be solved using an exact method. The combination of three different neighborhood relations is being explored with Tabu Search. In addition, a new constructive method for the initial solution is proposed. Finally, I show how the proposed techniques perform on public benchmarks.
 # Results
-|   Index   	| Assets 	|                                                                	|         TS&TokenRing         	|       TS In Ref[2]      	|
+|   Index   	| Assets 	|                                                                	|         TS&TokenRing         	|       TS In Ref      	|
 |:---------:	|:------:	|:--------------------------------------------------------------:	|:----------------------------:	|:-----------------------:	|
 | Hang Seng 	|   31   	|  Median percentage error<br>Mean percentage error<br>Time (s)  	|   1.812<br>2.2656<br>1154.3  	|  1.2181<br>1.1217<br>74 	|
 |    DAX    	|   85   	| Median percentage error <br>Mean percentage error <br>Time (s) 	|     4.21<br>4.035<br>2873    	| 2.6380<br>3.3049<br>199 	|
