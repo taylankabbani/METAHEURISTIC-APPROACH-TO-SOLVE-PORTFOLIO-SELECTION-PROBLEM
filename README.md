@@ -1,30 +1,17 @@
-# Portfolio Optimization Problem Definition
-### [Complete description of the project + code](https://github.com/taylankabbani/METAHEURISTIC-APPROACH-FOR-POP/blob/master/Description/Progress_Repo.pdf)
-Financial markets are at the heart of the modern economy and they
-provide an avenue for the sale and purchase of assets such as bonds,
-stocks, foreign exchange, and derivatives. The prime objective of any
-investor when investing capital in the stock market is to minimize the
-risk involved in the trading process and maximize the profits generated,
-and this objective can be met by optimally choosing a portfolio
-(grouping of stocks) in which the capital among stocks is invested in
-such a proportion that the profit is maximum and the risk is minimum,
-this known as *Portfolio Optimization*
-The traditional financial risk management approach is based on
-*mean–variance model* of portfolio theory (**Markowitz**)\[1\], which
-uses historical mean return and co-variance of stocks to optimize a
-portfolio, therefore we can divide the Portfolio Optimization problem
-(POP) into two stages. The first stage is to forecast the future return
-(beliefs about the future performances) of available securities based on
-historical data, and the second stage is to distribute the capital among
-the chosen assets in a way to minimizes risk and maximizes profits.
-# In this Study
-Specific constraints will be introduced to the basic
-*Markowitz* model in order to make it more adherent to the real world
-trading mechanisms. The addition of these constraint will turn the model
-from Quadratic Programming (QP) problem to a Mixed Integer Quadratic
-Programming (MIQP) problem, which is a NP-Hard problem that can be
-optimally solved using *Metaheuristic* approaches.  
-*The Constrained Multi-Objective Portfolio Selection* will be applied on
-new problem instances (Istanbul Stock exchange), and will be optimally
-solved using a Metaheuristics approach, (**Tabu Search**).
+# METAHEURISTIC APPROACH TO SOLVE PORTFOLIO SELECTION PROBLEM
+### [Research Paper](https://github.com/taylankabbani/METAHEURISTIC-APPROACH-FOR-POP/blob/master/Description/Progress_Repo.pdf)
+ Tabu Search and TokenRing Search is being used in order to solve the Portfolio Optimization Problem. The seminal mean-variance model of Markowitz is being considered with the addition of cardinality and quantity constraints to better capture the dynamics of the trading procedure, the model becomes NP-hard problem which can not be solved using an exact method. The combination of three different neighborhood relations is being explored with Tabu Search. In addition, a new constructive method for the initial solution is proposed. Finally, I show how the proposed techniques perform on public benchmarks.
+ 
+## [Proposed Constructive Heuristics](https://github.com/taylankabbani/METAHEURISTIC-APPROACH-TO-SOLVE-PORTFOLIO-SELECTION-PROBLEM/tree/master/InitialSolution): 
+![](https://github.com/taylankabbani/METAHEURISTIC-APPROACH-TO-SOLVE-PORTFOLIO-SELECTION-PROBLEM/blob/master/Description/Algo1.PNG)
+
+
+# Results
+|   Index   	| Assets 	|                                                                	|         TS&TokenRing         	|       TS In Ref      	|
+|:---------:	|:------:	|:--------------------------------------------------------------:	|:----------------------------:	|:-----------------------:	|
+| Hang Seng 	|   31   	|  Median percentage error<br>Mean percentage error<br>Time (s)  	|   1.812<br>2.2656<br>1154.3  	|  1.2181<br>1.1217<br>74 	|
+|    DAX    	|   85   	| Median percentage error <br>Mean percentage error <br>Time (s) 	|     4.21<br>4.035<br>2873    	| 2.6380<br>3.3049<br>199 	|
+|    FTSE   	|   89   	| Median percentage error <br>Mean percentage error <br>Time (s) 	|   1.2406<br>1.2959<br>2919   	| 1.0841<br>1.6080<br>246 	|
+|    S&P    	|   98   	| Median percentage error <br>Mean percentage error <br>Time (s) 	|   2.3630<br>2.5068<br>3107   	| 1.2882<br>3.3092<br>225 	|
+|   Nikkei  	|   225  	| Median percentage error <br>Mean percentage error <br>Time (s) 	| 1.34635<br>1.21220<br>5866.2 	| 0.6093<br>0.8975<br>545 	|
 
