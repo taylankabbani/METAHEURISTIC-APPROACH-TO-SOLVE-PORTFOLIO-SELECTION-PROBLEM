@@ -28,10 +28,9 @@ def Solutions(ReturnSD_path, corr_path):
     df.to_csv('Data/portcef.csv', index=None)
     return Solutions, df
 
-solutions, portcef = Solutions("Data/Hong_Kong_31/Return&SD.txt", "Data/Hong_Kong_31/correlation.txt")
-
+solutions, portcef = Solutions("Data/Japan_225/Return&SD.txt", "Data/Japan_225/correlation.txt")
 # Unconstrained Efficient frontier
-portef = pd.read_csv("Data\Hong_Kong_31\portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
+portef = pd.read_csv("Data/Japan_225/portef.txt", sep='\t', header=None,names = ['Return', 'Risk'])
 
 
 # Variance error
@@ -77,3 +76,13 @@ portcef = portcef.assign(Risk_Error = lambda portcef : 100 * (portcef.Risk - por
 
 print("Variance of return error: {}\nMean return error: {}".format(round(portcef.Risk_Error.mean(),4),
 round(portcef.Return_Error.mean(),4)))
+
+portcef.plot(x = "Risk", y ='Return')
+plt.xlim([0, 0.006]);
+plt.ylim([0, 0.013]);
+plt.savefig('portcef')
+
+portef.plot(x = "Risk", y ='Return')
+plt.xlim([0, 0.006]);
+plt.ylim([0, 0.013]);
+plt.savefig('portef')
