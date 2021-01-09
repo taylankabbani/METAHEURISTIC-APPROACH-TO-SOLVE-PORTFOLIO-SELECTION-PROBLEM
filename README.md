@@ -22,3 +22,10 @@
 |    S&P    	|   98   	| Median percentage error <br>Mean percentage error <br>Time (s) 	|   2.3630<br>2.5068<br>3107   	| 1.2882<br>3.3092<br>225 	|
 |   Nikkei  	|   225  	| Median percentage error <br>Mean percentage error <br>Time (s) 	| 1.34635<br>1.21220<br>5866.2 	| 0.6093<br>0.8975<br>545 	|
 
+|   Index   	| Assets 	|                                                      	|    TS&TokenRing   	|
+|:---------:	|:------:	|:----------------------------------------------------:	|:-----------------:	|
+| Hang Seng 	|   31   	|  First Obj (Risk) error<br>Second Obj (Return) error 	|  7.0405<br>2.4751 	|
+|    DAX    	|   85   	| First Obj (Risk) error <br>Second Obj (Return) error 	| 49.7685<br>1.4008 	|
+|    FTSE   	|   89   	| First Obj (Risk) error <br>Second Obj (Return) error 	|  6.0545<br>1.8224 	|
+|    S&P    	|   98   	| First Obj (Risk) error <br>Second Obj (Return) error 	| 20.2107<br>3.5328 	|
+|   Nikkei  	|   225  	| First Obj (Risk) error <br>Second Obj (Return) error 	|  9.221<br>2.2761  	|
